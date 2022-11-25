@@ -1,9 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Option extends StatefulWidget {
-  final bool Selected;
+  final RxBool Selected;
   final String option;
   final String OptionText;
   Option(
@@ -23,7 +24,7 @@ class _OptionState extends State<Option> {
       decoration: BoxDecoration(
         border: Border.all(
             width: 1,
-            color: widget.Selected
+            color: widget.Selected.value
                 ? const Color.fromARGB(255, 0, 122, 109)
                 : const Color(0xff00AB99)),
         borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -40,7 +41,7 @@ class _OptionState extends State<Option> {
             height: 65,
             width: 35,
             decoration: BoxDecoration(
-                color: widget.Selected
+                color: widget.Selected.value
                     ? Color.fromARGB(255, 0, 122, 109)
                     : const Color(0xff00AB99)),
           ),

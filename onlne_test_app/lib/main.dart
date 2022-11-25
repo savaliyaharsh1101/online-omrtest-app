@@ -4,6 +4,7 @@ import 'package:onlne_test_app/modale/qustionModle.dart';
 import 'package:onlne_test_app/widget/answerOption.dart';
 import 'package:onlne_test_app/widget/reviewTile.dart';
 
+import 'controlar/omrnswer.dart';
 import 'controlar/timer.dart';
 
 void main() {
@@ -37,18 +38,20 @@ class MyHomePage extends StatefulWidget {
 
 final CountDownTimerState TimerState = Get.put(CountDownTimerState());
 
+OmrSheetAnswer listOfAnswerAndState = OmrSheetAnswer();
+
 class _MyHomePageState extends State<MyHomePage> {
   int selectOption = 0;
   int _counter = 0;
   RxInt questionNo = 1.obs;
   int minTimer = 59;
   int scTimer = 59;
-  bool option1Select = false;
-  bool option2Select = false;
-  bool option3Select = false;
-  bool option4Select = false;
-  List<int> listOfAnswer = [];
-  List<int> listOfState = [];
+  RxBool option1Select = false.obs;
+  RxBool option2Select = false.obs;
+  RxBool option3Select = false.obs;
+  RxBool option4Select = false.obs;
+  // List<int> listOfAnswer = [];
+  // List<int> listOfState = [];
   int attemptedQuestion = 0;
   int qustionForReview = 0;
   bool reviewView = true;
@@ -152,11 +155,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: GestureDetector(
                         onTap: () {
                           selectOption = 1;
-                          option1Select = true;
-                          option2Select = false;
-                          option3Select = false;
-                          option4Select = false;
-
+                          option1Select = true.obs;
+                          option2Select = false.obs;
+                          option3Select = false.obs;
+                          option4Select = false.obs;
                           setState(() {});
                         },
                         child: Option(
@@ -170,12 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {});
                           selectOption = 2;
-                          option1Select = false;
-                          option2Select = true;
-                          option3Select = false;
-                          option4Select = false;
+                          option1Select = false.obs;
+                          option2Select = true.obs;
+                          option3Select = false.obs;
+                          option4Select = false.obs;
+                          setState(() {});
                         },
                         child: Option(
                           Selected: option2Select,
@@ -188,12 +190,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {});
                           selectOption = 3;
-                          option1Select = false;
-                          option2Select = false;
-                          option3Select = true;
-                          option4Select = false;
+                          option1Select = false.obs;
+                          option2Select = false.obs;
+                          option3Select = true.obs;
+                          option4Select = false.obs;
+                          setState(() {});
                         },
                         child: Option(
                           Selected: option3Select,
@@ -206,12 +208,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {});
                           selectOption = 4;
-                          option1Select = false;
-                          option2Select = false;
-                          option3Select = false;
-                          option4Select = true;
+                          option1Select = false.obs;
+                          option2Select = false.obs;
+                          option3Select = false.obs;
+                          option4Select = true.obs;
+                          setState(() {});
                         },
                         child: Option(
                           Selected: option4Select,
@@ -273,13 +275,17 @@ class _MyHomePageState extends State<MyHomePage> {
                               bool colorBool = true;
                               int index2 = index + 1;
                               bool starIcon = false;
-                              if (listOfAnswer.length >= index + 1) {
-                                if (listOfAnswer[index] != 0) {
+                              if (listOfAnswerAndState.answerList.length >=
+                                  index + 1) {
+                                if (listOfAnswerAndState.answerList[index] !=
+                                    0) {
                                   colorBool = false;
                                 }
                               }
-                              if (listOfState.length >= index + 1) {
-                                if (listOfState[index] == 2) {
+                              if (listOfAnswerAndState.answerList.length >=
+                                  index + 1) {
+                                if (listOfAnswerAndState.answerList[index] ==
+                                    2) {
                                   starIcon = true;
                                 }
                               }
@@ -287,9 +293,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: Container(
                                   // footer: new Text(""),
                                   child: Stack(children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 4.0, top: 7),
+                                    Center(
                                       child: Icon(
                                         Icons.circle,
                                         color: colorBool
@@ -337,43 +341,43 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           child: GestureDetector(
                             onTap: () {
-                              if (listOfAnswer.length < (questionNo.toInt()) ||
-                                  listOfAnswer.length == 0) {
-                                listOfAnswer.add(selectOption);
-                                listOfState.add(2);
-
-                                option1Select = false;
-                                option2Select = false;
-                                option3Select = false;
-                                option4Select = false;
+                              if (listOfAnswerAndState.answerList.length <
+                                      (questionNo.toInt()) ||
+                                  listOfAnswerAndState.answerList.length == 0) {
+                                listOfAnswerAndState.addanswer(2, selectOption);
+                                option1Select = false.obs;
+                                option2Select = false.obs;
+                                option3Select = false.obs;
+                                option4Select = false.obs;
                                 selectOption = 0;
                                 if (questionNo > 100) {
                                   questionNo.update(questionNo++);
                                 }
-                                ;
-                                setState(() {});
                               } else {
-                                if (listOfAnswer[questionNo.toInt() - 2] == 1) {
-                                  option1Select = true;
+                                if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.toInt() - 1) ==
+                                    1) {
+                                  option1Select = true.obs;
                                 }
-                                if (listOfAnswer[questionNo.toInt() - 2] == 4) {
-                                  option4Select = true;
+                                if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.toInt() - 1) ==
+                                    4) {
+                                  option4Select = true.obs;
                                 }
-                                if (listOfAnswer[questionNo.toInt() - 2] == 2) {
-                                  option2Select = true;
+                                if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.toInt() - 1) ==
+                                    2) {
+                                  option2Select = true.obs;
                                 }
-                                if (listOfAnswer[questionNo.toInt() - 2] == 3) {
-                                  option3Select = true;
+                                if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.toInt() - 1) ==
+                                    3) {
+                                  option3Select = true.obs;
                                 }
-                                option1Select = false;
-                                option2Select = false;
-                                option3Select = false;
-                                option4Select = false;
-                                if (questionNo > 1 && questionNo < 100) {
-                                  questionNo.update(questionNo++);
-                                }
-
-                                setState(() {});
+                                option1Select = false.obs;
+                                option2Select = false.obs;
+                                option3Select = false.obs;
+                                option4Select = false.obs;
                               }
                             },
                             child: Row(
@@ -416,43 +420,49 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       child: Text("Sava & Next"),
                       onPressed: () {
-                        if (listOfAnswer.length < (questionNo.toInt()) ||
-                            listOfAnswer.length == 0) {
-                          listOfAnswer.add(selectOption);
-                          listOfState.add(1);
-
-                          option1Select = false;
-                          option2Select = false;
-                          option3Select = false;
-                          option4Select = false;
+                        if (listOfAnswerAndState.answerList.length <
+                                (questionNo.toInt()) ||
+                            listOfAnswerAndState.answerList.length == 0) {
+                          listOfAnswerAndState.addanswer(1, selectOption);
+                          option1Select = false.obs;
+                          option2Select = false.obs;
+                          option3Select = false.obs;
+                          option4Select = false.obs;
                           selectOption = 0;
+                          setState(() {});
                           if (questionNo < 100) {
                             questionNo.update(questionNo++);
                           }
-                          setState(() {});
                         } else {
-                          option1Select = false;
-                          option2Select = false;
-                          option3Select = false;
-                          option4Select = false;
-                          if (listOfAnswer[questionNo.toInt() - 1] == 1) {
-                            option1Select = true;
+                          option1Select = false.obs;
+                          option2Select = false.obs;
+                          option3Select = false.obs;
+                          option4Select = false.obs;
+                          if (listOfAnswerAndState
+                                  .answerList[questionNo.toInt() - 1]
+                                  .selectedOption ==
+                              1) {
+                            option1Select = true.obs;
                           }
-                          if (listOfAnswer[questionNo.toInt() - 1] == 4) {
-                            option4Select = true;
+                          if (listOfAnswerAndState
+                                  .answerList[questionNo.toInt() - 1]
+                                  .selectedOption == 4) {
+                            option4Select = true.obs;
                           }
-                          if (listOfAnswer[questionNo.toInt() - 1] == 2) {
-                            option2Select = true;
+                          if (listOfAnswerAndState
+                                  .answerList[questionNo.toInt() - 1]
+                                  .selectedOption == 2) {
+                            option2Select = true.obs;
                           }
-                          if (listOfAnswer[questionNo.toInt() - 1] == 3) {
-                            option3Select = true;
+                          if (listOfAnswerAndState
+                                  .answerList[questionNo.toInt() - 1]
+                                  .selectedOption == 3) {
+                            option3Select = true.obs;
                           }
 
                           if (questionNo > 1 && questionNo < 100) {
                             questionNo.update(questionNo++);
                           }
-
-                          setState(() {});
                         }
                       },
                       style: ButtonStyle(
@@ -463,17 +473,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // for (var item in QuestionList().questionList) {
-                      // if(item.qustionNo==questionNo-1){
-                      //   item.selectedOption=selectOption;
-                      // }}
-                      option1Select = false;
-                      option2Select = false;
-                      option3Select = false;
-                      option4Select = false;
+                      option1Select = false.obs;
+                      option2Select = false.obs;
+                      option3Select = false.obs;
+                      option4Select = false.obs;
                       selectOption = 0;
-
-                      setState(() {});
                     },
                     child: Row(
                       children: [
@@ -536,25 +540,33 @@ class _MyHomePageState extends State<MyHomePage> {
                             qustionForReview = 0;
                             attemptedQuestion = 0;
 
-                            option1Select = false;
-                            option2Select = false;
-                            option3Select = false;
-                            option4Select = false;
-                            if (listOfAnswer[questionNo.toInt() - 2] == 1 &&
+                            option1Select = false.obs;
+                            option2Select = false.obs;
+                            option3Select = false.obs;
+                            option4Select = false.obs;
+                            if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.value - 1) ==
+                                    1 &&
                                 questionNo > 1) {
-                              option1Select = true;
+                              option1Select = true.obs;
                             }
-                            if (listOfAnswer[questionNo.toInt() - 2] == 4 &&
+                            if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.value - 1) ==
+                                    4 &&
                                 questionNo > 1) {
-                              option4Select = true;
+                              option4Select = true.obs;
                             }
-                            if (listOfAnswer[questionNo.toInt() - 2] == 2 &&
+                            if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.value - 1) ==
+                                    2 &&
                                 questionNo > 1) {
-                              option2Select = true;
+                              option2Select = true.obs;
                             }
-                            if (listOfAnswer[questionNo.toInt() - 2] == 3 &&
+                            if (listOfAnswerAndState
+                                        .fatchanswer(questionNo.value - 1) ==
+                                    3 &&
                                 questionNo > 1) {
-                              option3Select = true;
+                              option3Select = true.obs;
                             }
 
                             if (questionNo > 1) {
@@ -605,16 +617,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           reviewView = false;
                           attemptedQuestion = 0;
                           qustionForReview = 0;
-                          listOfAnswer.forEach(
+                          listOfAnswerAndState.answerList.forEach(
                             (element) {
-                              if (element != 0) {
+                              if (element.selectedOption != 0) {
                                 attemptedQuestion++;
                               }
                             },
                           );
-                          listOfState.forEach(
+                          listOfAnswerAndState.answerList.forEach(
                             (element) {
-                              if (element == 2) {
+                              if (element.stateOfQustion == 2) {
                                 qustionForReview++;
                               }
                             },
@@ -632,45 +644,45 @@ class _MyHomePageState extends State<MyHomePage> {
                   reviewView
                       ? GestureDetector(
                           onTap: () {
-                            // for (var item in QuestionList().questionList) {
-                            // if(item.qustionNo==questionNo-1){
-                            //   item.selectedOption=selectOption;
-                            // }}
-                            if (listOfAnswer.length < (questionNo.toInt()) ||
-                                listOfAnswer.length == 0) {
-                              listOfAnswer.add(0);
-                              listOfState.add(0);
-
-                              option1Select = false;
-                              option2Select = false;
-                              option3Select = false;
-                              option4Select = false;
+                            if (listOfAnswerAndState.answerList.length <
+                                    (questionNo.toInt()) ||
+                                listOfAnswerAndState.answerList.length == 0) {
+                              listOfAnswerAndState.addanswer(0, 0);
+                              option1Select = false.obs;
+                              option2Select = false.obs;
+                              option3Select = false.obs;
+                              option4Select = false.obs;
                               selectOption = 0;
                               questionNo.update(questionNo++);
-                              setState(() {});
                             } else {
-                              option1Select = false;
-                              option2Select = false;
-                              option3Select = false;
-                              option4Select = false;
-                              if (listOfAnswer[questionNo.toInt() - 2] == 1) {
-                                option1Select = true;
+                              option1Select = false.obs;
+                              option2Select = false.obs;
+                              option3Select = false.obs;
+                              option4Select = false.obs;
+                              if (listOfAnswerAndState
+                                      .fatchanswer(questionNo.value - 1) ==
+                                  1) {
+                                option1Select = true.obs;
                               }
-                              if (listOfAnswer[questionNo.toInt() - 2] == 4) {
-                                option4Select = true;
+                              if (listOfAnswerAndState
+                                      .fatchanswer(questionNo.value - 1) ==
+                                  4) {
+                                option4Select = true.obs;
                               }
-                              if (listOfAnswer[questionNo.toInt() - 2] == 2) {
-                                option2Select = true;
+                              if (listOfAnswerAndState
+                                      .fatchanswer(questionNo.value - 1) ==
+                                  2) {
+                                option2Select = true.obs;
                               }
-                              if (listOfAnswer[questionNo.toInt() - 2] == 3) {
-                                option3Select = true;
+                              if (listOfAnswerAndState
+                                      .fatchanswer(questionNo.value - 1) ==
+                                  3) {
+                                option3Select = true.obs;
                               }
 
                               if (questionNo > 1 && questionNo < 100) {
                                 questionNo.update(questionNo++);
                               }
-
-                              setState(() {});
                             }
                           },
                           child: Row(
